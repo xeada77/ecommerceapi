@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const Cryptojs = require("crypto-js");
+const jwt = require("jsonwebtoken");
 
 // REGISTER
 router.post("/register", async (req, res) => {
@@ -18,12 +19,11 @@ router.post("/register", async (req, res) => {
     const { password, ...others } = savedUser._doc;
     res.status(201).json(others);
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({ error });
   }
 });
 
 // LOGIN
-
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
@@ -35,8 +35,16 @@ router.post("/login", async (req, res) => {
           process.env.CRYPTO_SEC
         ).toString(Cryptojs.enc.Utf8) == req.body.password
       ) {
+        const accessToken = jwt.sign(
+          {
+            id: user.id,
+            isAdmin: user.isAdmin,
+          },
+          process.env.JWT_SEC,
+          { expiresIn: "3d" }
+        );
         const { password, ...others } = user._doc;
-        res.status(201).json(others);
+        res.status(201).json({ ...others, accessToken });
       } else {
         res.status(401).json({ error: "Credenciales incorrectas" });
       }
@@ -44,7 +52,7 @@ router.post("/login", async (req, res) => {
       res.status(401).json({ error: "Credenciales incorrectas" });
     }
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({ error });
   }
 });
 
