@@ -4,6 +4,7 @@ const routes = {
   cartRoutes: require("./cart"),
   productRoutes: require("./product"),
   orderRoutes: require("./order"),
+  checkoutRoutes: require("./stripe"),
 };
 
 module.exports = routes;
