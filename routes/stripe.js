@@ -20,11 +20,16 @@ router.post("/payment", async (req, res) => {
   try {
     console.log("KEY");
     console.log(process.env.STRIPE_KEY);
-    const charge = await stripe.charges.create({
-      source: req.body.tokenId,
-      amount: req.body.amount,
-      currency: "eur",
-    });
+    const charge = await stripe.charges.create(
+      {
+        source: req.body.tokenId,
+        amount: req.body.amount,
+        currency: "eur",
+      },
+      {
+        apiKey: process.env.STRIPE_KEY,
+      }
+    );
     res.status(200).json(charge);
   } catch (error) {
     res.status(500).json({ error });
