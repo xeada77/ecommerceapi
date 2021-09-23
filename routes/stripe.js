@@ -17,12 +17,12 @@ router.post("/payment", async (req, res) => {
 });
 
 router.post("/create-payment-intent", async (req, res) => {
-  const { paymentMethodType, currency } = req.body;
+  const { paymentMethodType, currency, amount } = req.body;
 
   const params = {
     payment_method_types: [paymentMethodType],
-    amount: 1999,
-    currency: currency,
+    amount,
+    currency,
   };
 
   try {
